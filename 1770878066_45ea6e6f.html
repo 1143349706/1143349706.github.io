@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风机性能评估报告</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #fd7e14;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            padding-top: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), #3a0ca3);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+        
+        .dashboard-card {
+            border-radius: 10px;
+            border-left: 5px solid var(--primary-color);
+            transition: all 0.3s ease;
+            height: 100%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dashboard-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        
+        .test-card {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            
+        }
+        
+        .test-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-card-header {
+            background-color: #f1f4ff;
+            color: black;
+            font-weight: bold;
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+        }
+        
+        .badge-efficiency {
+            font-size: 0.9rem;
+            padding: 0.5em 0.8em;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: linear-gradient(135deg, var(--primary-color), #3a0ca3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+        }
+        
+        .spinner-border {
+            width: 4rem;
+            height: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-card {
+                margin-bottom: 15px;
+            }
+            
+            .header {
+                padding: 1.5rem 0;
+            }
+        }
+        
+        .parameter-table th {
+            background-color: #f0f4ff;
+        }
+        
+        .diagram-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            overflow: auto;
+        }
+        
+        .diagram-svg {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 480px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        /* 新增设备信息卡片样式 */
+        .device-info-card {
+            border-left: 5px solid rgba(63, 81, 181, 1);
+        }
+        
+        .device-info-table th {
+            background-color: #e8eaf6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mb-5">
+        <div class="header text-center">
+            <div class="container">
+                <h1 class="display-4 fw-bold">风机性能评估报告</h1>
+                <p class="lead">动态数据展示与性能分析</p>
+            </div>
+        </div>
+        
+        <!-- 设备基本信息卡片 -->
+        <div class="card shadow-sm mb-4 device-info-card">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-pc-display me-2"></i>设备基本信息
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered device-info-table">
+                        <tbody>
+                            
+        <tr>
+            <th width="30%">基本信息</th>
+            <td>测试</td>
+        </tr>
+        <tr>
+            <th width="30%">设备ID</th>
+            <td>28</td>
+        </tr>
+        <tr>
+            <th width="30%">创建时间</th>
+            <td>2026-02-04 13:09:41</td>
+        </tr>
+        <tr>
+            <th width="30%">功率因数</th>
+            <td>23</td>
+        </tr>
+        <tr>
+            <th width="30%">截面高(mm)</th>
+            <td>23</td>
+        </tr>
+        <tr>
+            <th width="30%">截面宽(mm)</th>
+            <td>11</td>
+        </tr>
+        <tr>
+            <th width="30%">电压(V)</th>
+            <td>[1, 1, 1]</td>
+        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 仪表盘区 -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clipboard-data dashboard-icon mb-3"></i>
+                        <h5 class="card-title">测试次数</h5>
+                        <p class="card-text display-6 fw-bold">2</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-wind dashboard-icon mb-3"></i>
+                        <h5 class="card-title">风量范围 (m³/h)</h5>
+                        <p class="card-text display-6 fw-bold">4-21</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-speedometer2 dashboard-icon mb-3"></i>
+                        <h5 class="card-title">全静压效率范围</h5>
+                        <p class="card-text display-6 fw-bold">0%-0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 测试详情卡片 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">测试数据</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+    <div class="card test-card h-100">
+        <div class="card-header test-card-header">
+            测试 #1 - 0Hz
+        </div>
+        <div class="card-body">
+            <h6 class="fw-bold">风速数据 (m/s)</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><td>23</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h6 class="fw-bold">风压数据</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><td>风机负压</td><td>43 Pa</td></tr>
+                        <tr><td>风机正压</td><td>1 Pa</td></tr>
+                        <tr><td>全静压</td><td>44 Pa</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h6 class="fw-bold">详细数据</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><td>平均电流</td><td>3 A</td></tr>
+                        <tr><td>风量</td><td>21 m³/h</td></tr>
+                        <tr><td>额外功率</td><td>120 W</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center">
+                <span class="badge bg-warning text-dark badge-efficiency">效率: 0%</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-4 col-md-6">
+    <div class="card test-card h-100">
+        <div class="card-header test-card-header">
+            测试 #2 - 23Hz
+        </div>
+        <div class="card-body">
+            <h6 class="fw-bold">风速数据 (m/s)</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><td>4</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h6 class="fw-bold">风压数据</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><td>风机负压</td><td>1 Pa</td></tr>
+                        <tr><td>风机正压</td><td>0 Pa</td></tr>
+                        <tr><td>全静压</td><td>1 Pa</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h6 class="fw-bold">详细数据</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><td>平均电流</td><td>1.67 A</td></tr>
+                        <tr><td>风量</td><td>4 m³/h</td></tr>
+                        <tr><td>额外功率</td><td>67 W</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center">
+                <span class="badge bg-warning text-dark badge-efficiency">效率: 0%</span>
+            </div>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 评估结果详情卡片 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">评估结果及改进方案</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">风量与全静压的点图</h6>
+                <div class="chart-container">
+                    <canvas id="pressureChart"></canvas>
+                </div>
+
+                <h6 class="fw-bold mt-4 mb-3">建议选型方案</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered parameter-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>风机型号</th>
+                                <th>风机数量</th>
+                                <th>预估输出功耗</th>
+                                <th>风机效率</th>
+                                <th>理论节能率</th>
+                                <th>回收周期</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+    <tr>
+        <td>EC风机-11-2113</td>
+        <td>4</td>
+        <td>1607-5487 W</td>
+        <td>70%-86%</td>
+        <td>35%</td>
+        <td>20 weeks</td>
+    </tr>
+    
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安装示例卡片 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">安装示例图</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="fw-bold">参数详情</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered parameter-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left">名称</th>
+                                <th style="text-align:left">数值</th>
+                                <th style="text-align:left">单位</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+    <tr>
+        <td>W - 安装空间总宽度</td>
+        <td>2500</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>H - 安装空间总高度</td>
+        <td>1600</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>a1 - 上下侧边间距</td>
+        <td>160.2</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>a2 - 左右边间距</td>
+        <td>385.2</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>DI - 风扇进风口直径</td>
+        <td>302</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>DN - 风扇标称宽度</td>
+        <td>479.6</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>FW - 风扇宽度</td>
+        <td>630</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>FH - 风扇高度</td>
+        <td>630</td>
+        <td>mm</td>
+    </tr>
+    
+    <tr>
+        <td>风机布局</td>
+        <td>2×2</td>
+        <td></td>
+    </tr>
+    
+    <tr>
+        <td>风扇总数</td>
+        <td>4</td>
+        <td></td>
+    </tr>
+    
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6 class="fw-bold mb-3">示意图技术要求</h6>
+                <div class="diagram-container">
+                    
+                        <div class="text-center">
+                            <div class="diagram-svg">
+                                
+    <svg width="1100" height="740" 
+         viewBox="0 0 1100 740" 
+         xmlns="http://www.w3.org/2000/svg" 
+         style="background:#f8f9fa; border-radius:8px;">
+        
+        <rect x="50" y="50" width="1000" height="640" 
+              fill="#f5f7ff" stroke="#1e88e5" stroke-width="2" stroke-dasharray="4" opacity="0.8"/>
+    
+        <line x1="50" y1="700" 
+              x2="1050" y2="700" 
+              stroke="#333" stroke-width="1.5"/>
+        <line x1="50" y1="695" 
+              x2="50" y2="705" 
+              stroke="#333" stroke-width="1.5"/>
+        <line x1="1050" y1="695" 
+              x2="1050" y2="705" 
+              stroke="#333" stroke-width="1.5"/>
+        <text x="550" y="725" 
+              text-anchor="middle" fill="#0d47a1" font-size="14" font-weight="bold">W=2500mm</text>
+    
+        <line x1="1060" y1="50" 
+              x2="1060" y2="690" 
+              stroke="#333" stroke-width="1.5"/>
+        <line x1="1055" y1="50" 
+              x2="1065" y2="50" 
+              stroke="#333" stroke-width="1.5"/>
+        <line x1="1055" y1="690" 
+              x2="1065" y2="690" 
+              stroke="#333" stroke-width="1.5"/>
+        <text x="1085" y="370" 
+              text-anchor="middle" fill="#0d47a1" font-size="14" font-weight="bold" 
+              transform="rotate(90, 1085, 370)">
+            H=1600mm
+        </text>
+    
+                <g transform="translate(174, 84)">
+                    <rect x="0" y="0" width="252" height="252" 
+                          fill="#f0f0f0" stroke="#546e7a" stroke-width="2" rx="5"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="95.92000000000002" fill="none" stroke="#1e88e5" 
+                            stroke-width="1.5" stroke-dasharray="4"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="60.400000000000006" fill="#b0bec5" stroke="#37474f" 
+                            stroke-width="1"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="20.133333333333336" fill="#9e9e9e"/>
+                    
+                    <line x1="126" y1="126" 
+                                x2="174.32" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="167.84634751086406" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.84" y2="167.8463475108641" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="77.67999999999999" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.83999999999997" y2="84.15365248913594" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="84.15365248913592" stroke="#f57c00" stroke-width="1.5"/>
+                    
+                    <text x="126" y="267" 
+                          text-anchor="middle" fill="#0d47a1" font-size="11">
+                        Fan 1 (630×630mm)
+                    </text>
+                </g>
+            
+                <g transform="translate(673.9999999999999, 84)">
+                    <rect x="0" y="0" width="252" height="252" 
+                          fill="#f0f0f0" stroke="#546e7a" stroke-width="2" rx="5"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="95.92000000000002" fill="none" stroke="#1e88e5" 
+                            stroke-width="1.5" stroke-dasharray="4"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="60.400000000000006" fill="#b0bec5" stroke="#37474f" 
+                            stroke-width="1"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="20.133333333333336" fill="#9e9e9e"/>
+                    
+                    <line x1="126" y1="126" 
+                                x2="174.32" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="167.84634751086406" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.84" y2="167.8463475108641" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="77.67999999999999" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.83999999999997" y2="84.15365248913594" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="84.15365248913592" stroke="#f57c00" stroke-width="1.5"/>
+                    
+                    <text x="126" y="267" 
+                          text-anchor="middle" fill="#0d47a1" font-size="11">
+                        Fan 2 (630×630mm)
+                    </text>
+                </g>
+            
+                <g transform="translate(174, 404)">
+                    <rect x="0" y="0" width="252" height="252" 
+                          fill="#f0f0f0" stroke="#546e7a" stroke-width="2" rx="5"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="95.92000000000002" fill="none" stroke="#1e88e5" 
+                            stroke-width="1.5" stroke-dasharray="4"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="60.400000000000006" fill="#b0bec5" stroke="#37474f" 
+                            stroke-width="1"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="20.133333333333336" fill="#9e9e9e"/>
+                    
+                    <line x1="126" y1="126" 
+                                x2="174.32" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="167.84634751086406" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.84" y2="167.8463475108641" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="77.67999999999999" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.83999999999997" y2="84.15365248913594" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="84.15365248913592" stroke="#f57c00" stroke-width="1.5"/>
+                    
+                    <text x="126" y="267" 
+                          text-anchor="middle" fill="#0d47a1" font-size="11">
+                        Fan 3 (630×630mm)
+                    </text>
+                </g>
+            
+                <g transform="translate(673.9999999999999, 404)">
+                    <rect x="0" y="0" width="252" height="252" 
+                          fill="#f0f0f0" stroke="#546e7a" stroke-width="2" rx="5"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="95.92000000000002" fill="none" stroke="#1e88e5" 
+                            stroke-width="1.5" stroke-dasharray="4"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="60.400000000000006" fill="#b0bec5" stroke="#37474f" 
+                            stroke-width="1"/>
+                    
+                    <circle cx="126" cy="126" 
+                            r="20.133333333333336" fill="#9e9e9e"/>
+                    
+                    <line x1="126" y1="126" 
+                                x2="174.32" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="167.84634751086406" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.84" y2="167.8463475108641" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="77.67999999999999" y2="126" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="101.83999999999997" y2="84.15365248913594" stroke="#f57c00" stroke-width="1.5"/><line x1="126" y1="126" 
+                                x2="150.16000000000003" y2="84.15365248913592" stroke="#f57c00" stroke-width="1.5"/>
+                    
+                    <text x="126" y="267" 
+                          text-anchor="middle" fill="#0d47a1" font-size="11">
+                        Fan 4 (630×630mm)
+                    </text>
+                </g>
+            
+            <line x1="300" y1="50" 
+                  x2="300" y2="114.07999999999998" 
+                  stroke="#e53935" stroke-width="2"/>
+            <text x="280" y="82.03999999999999" 
+                  text-anchor="middle" fill="#e53935" font-size="12" 
+                  transform="rotate(-90, 280, 82.03999999999999)">
+                a1=160.2mm
+            </text>
+        
+            <line x1="50" y1="210" 
+                  x2="204.07999999999998" y2="210" 
+                  stroke="#e53935" stroke-width="2"/>
+            <text x="127.03999999999999" y="195" 
+                  text-anchor="middle" fill="#e53935" font-size="12">a2=385.2mm</text>
+        
+            <line x1="300" y1="270.4" 
+                  x2="390.4" y2="190" 
+                  stroke="#5e35b1" stroke-width="1.5"/>
+            <text x="395.4" y="185" 
+                  text-anchor="start" fill="#5e35b1" font-size="12">DI=302mm</text>
+        
+            <line x1="300" y1="305.92" 
+                  x2="425.92" y2="230" 
+                  stroke="#1e88e5" stroke-width="1.5"/>
+            <text x="430.92" y="235" 
+                  text-anchor="start" fill="#1e88e5" font-size="12">DN=479.6mm</text>
+        
+        <text x="70" y="80" 
+              fill="#0d47a1" font-size="14" font-weight="bold">布局: 2×2</text>
+        <text x="70" y="105" 
+              fill="#0d47a1" font-size="14" font-weight="bold">风机数量: 4</text>
+        <text x="70" y="130" 
+              fill="#0d47a1" font-size="14" font-weight="bold">安装尺寸: 2500×1600mm</text>
+    
+    </svg>
+                            </div>
+                        </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 图表初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const testData = [{"testcycle":1,"frequency":0,"Vresult":[23],"pa1":43,"pa2":1,"ampere_avg":3,"airquantity":21,"totalpa":44,"extrapower":120,"rate":0},{"testcycle":2,"frequency":23,"Vresult":[4],"pa1":1,"pa2":0,"ampere_avg":1.67,"airquantity":4,"totalpa":1,"extrapower":67,"rate":0}];
+            
+            if (testData.length > 0) {
+                // 风量与全静压图表
+                const pressureCtx = document.getElementById('pressureChart').getContext('2d');
+                
+                // 准备图表数据
+                const datasets = testData.map((test, index) => {
+                    const colors = ['rgba(67, 97, 238, 0.8)', 'rgba(253, 126, 20, 0.8)', 'rgba(40, 167, 69, 0.8)'];
+                    const borderColors = ['rgba(67, 97, 238, 1)', 'rgba(253, 126, 20, 1)', 'rgba(40, 167, 69, 1)'];
+                    
+                    return {
+                        label: `测试 #${test.testcycle} - ${test.frequency}Hz`,
+                        data: [{
+                            x: test.airquantity,
+                            y: test.totalpa
+                        }],
+                        backgroundColor: colors[index % colors.length],
+                        borderColor: borderColors[index % borderColors.length],
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    };
+                });
+                
+                // 计算图表的最大值（扩大10%作为边距）
+                const maxAirquantity = Math.max(...testData.map(t => t.airquantity));
+                const maxTotalpa = Math.max(...testData.map(t => t.totalpa));
+                const maxX = maxAirquantity * 1.1;
+                const maxY = maxTotalpa * 1.1;
+                
+                // 创建散点图
+                const pressureChart = new Chart(pressureCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                type: 'linear',
+                                position: 'bottom',
+                                title: {
+                                    display: true,
+                                    text: '风量 (m³/h)'
+                                },
+                                min: 0,
+                                max: maxX
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: '全静压 (Pa)'
+                                },
+                                min: 0,
+                                max: maxY
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const point = context.raw;
+                                        const testIndex = context.datasetIndex;
+                                        const test = testData[testIndex];
+                                        return `风量: ${point.x.toLocaleString()} m³/h, 全静压: ${point.y} Pa`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
